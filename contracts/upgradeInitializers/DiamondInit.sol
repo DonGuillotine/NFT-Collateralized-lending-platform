@@ -9,6 +9,8 @@ pragma solidity ^0.8.0;
 /******************************************************************************/
 
 import {LibDiamond} from "../libraries/LibDiamond.sol";
+import {LibStorage} from "../libraries/LibStorage.sol";
+import {LibSecurity} from "../libraries/LibSecurity.sol";
 import { IDiamondLoupe } from "../interfaces/IDiamondLoupe.sol";
 import { IDiamondCut } from "../interfaces/IDiamondCut.sol";
 import { IERC173 } from "../interfaces/IERC173.sol";
@@ -19,6 +21,7 @@ import { IERC165 } from "../interfaces/IERC165.sol";
 // of your diamond. Add parameters to the init funciton if you need to.
 
 contract DiamondInit {    
+    error ZeroAddress();
 
     // You can add parameters to this function in order to pass in 
     // data to set your own state variables
@@ -29,6 +32,19 @@ contract DiamondInit {
         ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
+
+        // NFT Lending Platform parameters
+        LibStorage.NFTLendingStorage storage nftLendingDS = LibStorage.diamondStorage();
+        
+        nftLendingDS.collateralRatio = 15000;
+        nftLendingDS.interestRate = 1000;
+        nftLendingDS.loanDuration = 7 days;
+        
+        if(msg.sender == address(0)) revert ZeroAddress();
+        nftLendingDS.admin = msg.sender;
+        nftLendingDS.paused = false;
+
+        nftLendingDS.loanCounter = 0;
 
         // add your own state variables 
         // EIP-2535 specifies that the `diamondCut` function takes two optional 
