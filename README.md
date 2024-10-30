@@ -1,5 +1,5 @@
 [![Mentioned in Awesome Foundry](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/crisgarner/awesome-foundry)
-# Foundry + Hardhat Diamonds
+# NFT Collateralized Lending Platform
 
 ## All Tests Pass for `NFTManagementFacet`
 
