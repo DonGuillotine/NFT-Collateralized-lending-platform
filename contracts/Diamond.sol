@@ -63,5 +63,29 @@ contract Diamond {
         return "THIS IS AN EXAMPLE OF AN IMMUTABLE FUNCTION";
     }
 
-    receive() external payable {}
+    receive() external payable {
+        LibDiamond.DiamondStorage storage ds;
+        bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
+        // get diamond storage
+        assembly {
+            ds.slot := position
+        }
+        // Get facet for receiving ETH
+        address facet = ds.selectorToFacetAndPosition[0x0].facetAddress;
+        require(facet != address(0), "Diamond: No facet for receiving ETH");
+
+        // Delegate call to facet
+        assembly {
+            // Copy function selector and any arguments
+            calldatacopy(0, 0, calldatasize())
+            // Execute the function using delegatecall
+            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
+            // Copy the returned data
+            returndatacopy(0, 0, returndatasize())
+            // Check result
+            switch result
+            case 0 {revert(0, returndatasize())}
+            default {return (0, returndatasize())}
+        }
+    }
 }

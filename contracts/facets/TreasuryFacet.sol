@@ -14,36 +14,21 @@ contract TreasuryFacet is ITreasury {
     error InsufficientRevenue();
     error TransferFailed();
 
-    struct TreasuryStorage {
-        uint256 platformFee;
-        uint256 minDeposit;
-        uint256 platformRevenue;
-        mapping(address => uint256) lenderBalances;
-        uint256 totalPoolBalance;
-    }
-
-    bytes32 constant TREASURY_STORAGE_POSITION = keccak256("nft.lending.treasury.storage");
+    event ETHReceived(uint256 amount, uint256 fee);
 
     modifier onlyAdmin() {
         LibNFTLending._authorizeAdmin();
         _;
     }
 
-    function treasuryStorage() internal pure returns (TreasuryStorage storage ts) {
-        bytes32 position = TREASURY_STORAGE_POSITION;
-        assembly {
-            ts.slot := position
-        }
-    }
-
     function depositETH() external payable override {
         if (msg.value == 0) revert InvalidAmount();
         
-        TreasuryStorage storage ts = treasuryStorage();
-        if (msg.value < ts.minDeposit) revert BelowMinimumDeposit();
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+        if (msg.value < ds.minDeposit) revert BelowMinimumDeposit();
 
-        ts.lenderBalances[msg.sender] += msg.value;
-        ts.totalPoolBalance += msg.value;
+        ds.lenderBalances[msg.sender] += msg.value;
+        ds.totalPoolBalance += msg.value;
 
         emit ETHDeposited(msg.sender, msg.value);
     }
@@ -51,11 +36,11 @@ contract TreasuryFacet is ITreasury {
     function withdrawETH(uint256 amount) external override {
         if (amount == 0) revert InvalidAmount();
 
-        TreasuryStorage storage ts = treasuryStorage();
-        if (ts.lenderBalances[msg.sender] < amount) revert InsufficientBalance();
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+        if (ds.lenderBalances[msg.sender] < amount) revert InsufficientBalance();
 
-        ts.lenderBalances[msg.sender] -= amount;
-        ts.totalPoolBalance -= amount;
+        ds.lenderBalances[msg.sender] -= amount;
+        ds.totalPoolBalance -= amount;
 
         (bool success, ) = msg.sender.call{value: amount}("");
         if (!success) revert TransferFailed();
@@ -64,27 +49,27 @@ contract TreasuryFacet is ITreasury {
     }
 
     function setPlatformFee(uint256 newFee) external override onlyAdmin {
-        if (newFee > 1000) revert InvalidFee(); // Max 10%
+        if (newFee > 1000) revert InvalidFee();
         
-        TreasuryStorage storage ts = treasuryStorage();
-        ts.platformFee = newFee;
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+        ds.platformFee = newFee;
         
         emit PlatformFeeUpdated(newFee);
     }
 
     function setMinDeposit(uint256 newMinDeposit) external override onlyAdmin {
-        TreasuryStorage storage ts = treasuryStorage();
-        ts.minDeposit = newMinDeposit;
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+        ds.minDeposit = newMinDeposit;
         
         emit MinDepositUpdated(newMinDeposit);
     }
 
     function withdrawPlatformRevenue(uint256 amount) external override onlyAdmin {
-        TreasuryStorage storage ts = treasuryStorage();
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
         if (amount == 0) revert InvalidAmount();
-        if (ts.platformRevenue < amount) revert InsufficientRevenue();
+        if (ds.platformRevenue < amount) revert InsufficientRevenue();
 
-        ts.platformRevenue -= amount;
+        ds.platformRevenue -= amount;
 
         (bool success, ) = msg.sender.call{value: amount}("");
         if (!success) revert TransferFailed();
@@ -93,34 +78,43 @@ contract TreasuryFacet is ITreasury {
     }
 
     function getLenderBalance(address lender) external view override returns (uint256) {
-        return treasuryStorage().lenderBalances[lender];
+        return LibStorage.diamondStorage().lenderBalances[lender];
     }
 
     function getTotalPoolBalance() external view override returns (uint256) {
-        return treasuryStorage().totalPoolBalance;
+        return LibStorage.diamondStorage().totalPoolBalance;
     }
 
     function getPlatformRevenue() external view override returns (uint256) {
-        return treasuryStorage().platformRevenue;
+        return LibStorage.diamondStorage().platformRevenue;
     }
 
     // Internal function to handle interest collection
     function _collectInterest(uint256 amount) internal {
-        TreasuryStorage storage ts = treasuryStorage();
-        uint256 fee = (amount * ts.platformFee) / 10000;
-        ts.platformRevenue += fee;
-        ts.totalPoolBalance += (amount - fee);
+        LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+        uint256 fee = (amount * ds.platformFee) / 10000;
+        ds.platformRevenue += fee;
+        ds.totalPoolBalance += (amount - fee);
     }
 
     receive() external payable {
-        if (msg.value > 0) {
-            treasuryStorage().totalPoolBalance += msg.value;
-        }
+        _handleIncomingETH();
     }
 
     fallback() external payable {
+        _handleIncomingETH();
+    }
+
+    function _handleIncomingETH() internal {
         if (msg.value > 0) {
-            treasuryStorage().totalPoolBalance += msg.value;
+            LibStorage.NFTLendingStorage storage ds = LibStorage.diamondStorage();
+            uint256 fee = (msg.value * ds.platformFee) / 10000;
+            
+            // Debug event
+            emit ETHReceived(msg.value, fee);
+            
+            ds.platformRevenue += fee;
+            ds.totalPoolBalance += (msg.value - fee);
         }
     }
 }

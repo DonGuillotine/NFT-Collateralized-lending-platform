@@ -48,6 +48,12 @@ contract DiamondInit {
 
         nftLendingDS.loanCounter = 0;
 
+         // Initialize Treasury parameters
+        nftLendingDS.platformFee = 100; // 1%
+        nftLendingDS.minDeposit = 0.1 ether;
+        nftLendingDS.platformRevenue = 0;
+        nftLendingDS.totalPoolBalance = 0;
+
         // add your own state variables 
         // EIP-2535 specifies that the `diamondCut` function takes two optional 
         // arguments: address _init and bytes calldata _calldata
