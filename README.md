@@ -2,6 +2,8 @@
 
 A decentralized NFT-collateralized lending platform implemented using the Diamond Pattern (EIP-2535). This platform enables users to deposit NFTs as collateral to borrow ETH, with fixed-term loans and interest rates.
 
+![Flowchart representing how all participants interact with the NFT Collateralized lending platform](charts/NFT-Collateralized-lending-platform-flow.svg)
+
 ## Overview
 
 This platform provides a secure and efficient way to use NFTs as collateral for ETH loans. Built using the Diamond Pattern, it offers modular functionality and upgradeability while maintaining high security standards.
