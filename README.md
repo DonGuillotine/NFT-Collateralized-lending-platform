@@ -23,6 +23,8 @@ This platform provides a secure and efficient way to use NFTs as collateral for 
 
 The platform is built using the Diamond Pattern (EIP-2535) and consists of the following main components:
 
+![Flowchart representing how all compoents interact with each other in the NFT Collateralized lending platform](charts/NFT-Collateralized-lending-platform.svg)
+
 ### Facets
 
 1. **NFT Management Facet**
