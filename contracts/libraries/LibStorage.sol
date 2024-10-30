@@ -32,22 +32,29 @@ library LibStorage {
     }
 
     struct NFTLendingStorage {
+        // NFT Management
         mapping(address => mapping(uint256 => NFTDeposit)) nftDeposits;
         mapping(address => uint256[]) userDepositedNFTs;
         
+        // Loan Management
         mapping(uint256 => Loan) loans;
         uint256 loanCounter;
         
+        // Treasury Storage
         mapping(address => uint256) lenderBalances;
         uint256 totalETHDeposited;
         
+        // Platform Configuration
         mapping(address => uint256) nftFloorPrices;
         uint256 collateralRatio;
         uint256 interestRate;
         uint256 loanDuration;
         bool paused;
 
+        // Access Control
         address admin;
+        address feeRecipient;
+        mapping(address => bool) whitelistedCollections;
 
         // Treasury Storage
         uint256 platformFee;
