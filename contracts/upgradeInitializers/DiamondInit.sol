@@ -25,7 +25,7 @@ contract DiamondInit {
 
     // You can add parameters to this function in order to pass in 
     // data to set your own state variables
-    function init() external {
+    function init(address _admin) external {
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
@@ -35,6 +35,8 @@ contract DiamondInit {
 
         // NFT Lending Platform parameters
         LibStorage.NFTLendingStorage storage nftLendingDS = LibStorage.diamondStorage();
+
+        nftLendingDS.admin = _admin;
         
         nftLendingDS.collateralRatio = 15000;
         nftLendingDS.interestRate = 1000;

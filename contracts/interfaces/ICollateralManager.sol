@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./ILoanTypes.sol";
+
 interface ICollateralManager {
     event NFTPriceSet(address indexed collection, uint256 price);
     event CollateralRatioSet(uint256 newRatio);
@@ -48,4 +50,30 @@ interface ICollateralManager {
      * @param loanAmount The requested loan amount
      */
     function validateCollateralValue(address collection, uint256 loanAmount) external view returns (bool);
+
+    /**
+     * @dev Creates a new Test Loan
+     * @param borrower The address of the borrower
+     * @param loanAmount The requested loan amount
+     * @param interestAmount The intereast amount
+     * @param startTime The time started
+     * @param endTime The time ended
+     * @param collection The NFT collection address
+     * @param tokenId The ID of the Token
+     */
+    function createTestLoan(
+        address borrower,
+        uint256 loanAmount,
+        uint256 interestAmount,
+        uint256 startTime,
+        uint256 endTime,
+        address collection,
+        uint256 tokenId
+    ) external returns (uint256);
+
+    /**
+     * @dev Gets the loan details
+     * @param loanId The loan ID to query
+     */
+    function getLoanStatus(uint256 loanId) external view returns (ILoanTypes.LoanStatus);
 }
