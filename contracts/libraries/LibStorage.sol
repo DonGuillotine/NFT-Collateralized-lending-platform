@@ -48,6 +48,12 @@ library LibStorage {
         bool paused;
 
         address admin;
+
+        // Treasury Storage
+        uint256 platformFee;
+        uint256 minDeposit;
+        uint256 platformRevenue;
+        uint256 totalPoolBalance;
     }
 
     function diamondStorage() internal pure returns (NFTLendingStorage storage ds) {

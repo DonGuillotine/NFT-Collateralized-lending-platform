@@ -13,6 +13,10 @@
 
 ![alt text](screenshots/LendingFacetTests.png)
 
+## All Tests Pass for `TreasuryFacet`
+
+![alt text](screenshots/TreasuryFacetTests.png)
+
 This is a mimimal template for [Diamonds](https://github.com/ethereum/EIPs/issues/2535) which allows facet selectors to be generated on the go in solidity tests!
 
 ## Installation
