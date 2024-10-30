@@ -3,7 +3,11 @@
 
 ## All Tests Pass for `NFTManagementFacet`
 
-![alt text](screenshots/image.png)
+![alt text](screenshots/NFTManagementFacetTests.png)
+
+## All Tests Pass for `CollateralManagerFacet`
+
+![alt text](screenshots/CollateralManagerFacetTests.png)
 
 This is a mimimal template for [Diamonds](https://github.com/ethereum/EIPs/issues/2535) which allows facet selectors to be generated on the go in solidity tests!
 

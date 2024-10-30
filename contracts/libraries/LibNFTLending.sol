@@ -43,7 +43,7 @@ library LibNFTLending {
     }
 
     function _isLoanDefaulted(LibStorage.Loan memory loan) internal view returns (bool) {
-        return block.timestamp > loan.endTime && loan.status == LibStorage.LoanStatus.Active;
+        return block.timestamp > loan.endTime && loan.status == ILoanTypes.LoanStatus.Active;
     }
 
     function _validateNFTOwnership(address collection, uint256 tokenId, address owner) internal view {
@@ -71,7 +71,7 @@ library LibNFTLending {
             interestAmount: interestAmount,
             startTime: block.timestamp,
             endTime: block.timestamp + ds.loanDuration,
-            status: LibStorage.LoanStatus.Active,
+            status: ILoanTypes.LoanStatus.Active,
             collateral: LibStorage.NFTCollateral({
                 collection: collection,
                 tokenId: tokenId,

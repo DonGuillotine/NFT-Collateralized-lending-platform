@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "../interfaces/ILoanTypes.sol";
+
 library LibStorage {
     bytes32 constant STORAGE_POSITION = keccak256("nft.lending.diamond.storage");
 
@@ -19,7 +21,7 @@ library LibStorage {
         uint256 interestAmount;
         uint256 startTime;
         uint256 endTime;
-        LoanStatus status;
+        ILoanTypes.LoanStatus status;
         NFTCollateral collateral;
     }
 
@@ -28,8 +30,6 @@ library LibStorage {
         uint256 tokenId;
         uint256 valueAtLock;
     }
-
-    enum LoanStatus { None, Active, Repaid, Defaulted }
 
     struct NFTLendingStorage {
         mapping(address => mapping(uint256 => NFTDeposit)) nftDeposits;
