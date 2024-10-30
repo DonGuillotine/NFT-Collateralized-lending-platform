@@ -1,6 +1,10 @@
 [![Mentioned in Awesome Foundry](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/crisgarner/awesome-foundry)
 # Foundry + Hardhat Diamonds
 
+## All Tests Pass for `NFTManagementFacet`
+
+![alt text](screenshots/image.png)
+
 This is a mimimal template for [Diamonds](https://github.com/ethereum/EIPs/issues/2535) which allows facet selectors to be generated on the go in solidity tests!
 
 ## Installation
